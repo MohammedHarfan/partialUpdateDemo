@@ -8,7 +8,11 @@ import com.plugin.repository.ContactPhoneRepository;
 import com.plugin.repository.CustomerRepository;
 import com.plugin.repository.CustomerStructuredRepository;
 import com.plugin.service.CustomerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -18,7 +22,9 @@ public class CustomerServiceImpl implements CustomerService {
     private ContactPhoneRepository contactPhoneRepository;
 //    private CustomerMapper mapper;
 
-        public CustomerServiceImpl(
+    private static final Logger log = LoggerFactory.getLogger(CustomerServiceImpl.class);
+
+    public CustomerServiceImpl(
             CustomerRepository customerRepository,
                                CustomerStructuredRepository customerStructuredRepository,
                                ContactPhoneRepository contactPhoneRepository
@@ -46,6 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = new Customer();
         customer.name = name;
         customerRepository.save(customer);
+        log.info("Customer added with id {}", customer.customerId);
         return customer;
     }
 
@@ -55,16 +62,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (myCustomer != null) {
             myCustomer.phone = phone;
             customerRepository.save(myCustomer);
-        }
-        return myCustomer;
-    }
-
-    @Override
-    public Customer updateCustomerContacts(long id, String phone) {
-        Customer myCustomer = customerRepository.findById(id).orElse(null);
-        if (myCustomer != null) {
-            myCustomer.phone = phone;
-            customerRepository.save(myCustomer);
+            log.info("Updated Customer with id {}", myCustomer.customerId);
         }
         return myCustomer;
     }
@@ -86,18 +84,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerStructured addCustomerStructured(String name) {
+    public CustomerStructured addCustomerStructured(String name, ContactPhone contactPhone) {
         CustomerStructured customerStructured = new CustomerStructured();
         customerStructured.name = name;
+        customerStructured.contactPhone = contactPhone;
         customerStructuredRepository.save(customerStructured);
+        log.info("CustomerStructured added with id {}", customerStructured.id);
         return customerStructured;
     }
 
     @Override
-    public CustomerStructured updateCustomerStructured(long id, String name){
-        CustomerStructured customerStructured = customerStructuredRepository.findById(id);
-        customerStructured.name = name;
-        customerStructuredRepository.save(customerStructured);
+    public CustomerStructured updateCustomerStructured(Long id, String name){
+        CustomerStructured customerStructured = customerStructuredRepository.findById(id).orElse(null);
+        if (customerStructured != null) {
+            customerStructured.name = name;
+            customerStructuredRepository.save(customerStructured);
+            log.info("Updated CustomerStructured with id {}", customerStructured.id);
+        }
         return customerStructured;
     }
 

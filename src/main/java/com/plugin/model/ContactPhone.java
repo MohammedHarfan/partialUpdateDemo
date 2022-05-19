@@ -9,7 +9,7 @@ public class ContactPhone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
     @Column(nullable=false)
-    public long customerId;
+    public Long customerId;
     public String phone;
 
     @Override
